@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8080:80"
+        volumes:
+            - .:/var/www/html
+        environment:
+            - APACHE_RUN_USER=www-data
+            - APACHE_RUN_GROUP=www-data
+        user: "www-data:www-data"
+        extra_hosts:
+            - host.docker.internal:host-gateway
+        dns:
+            - 8.8.8.8
+            - 8.8.4.4
+        depends_on:
+            - db
+            - redis
+        networks:
+            - gnify-network
+
+    db:
+        image: postgres:13
+        ports:
+            - "5433:5432"
+        environment:
+            POSTGRES_USER: gnify_user
+            POSTGRES_PASSWORD: secret
+            POSTGRES_DB: gnify_shop
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - gnify-network
+
+    mailhog:
+        image: mailhog/mailhog:latest
+        ports:
+            - "1026:1025"  # SMTP server
+            - "8026:8025"  # Web UI
+        environment:
+            MH_STORAGE: memory
+        networks:
+            - gnify-network
+
+    redis:
+        image: redis:7-alpine
+        ports:
+            - "6380:6379"
+        command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru --save 60 1000
+        volumes:
+            - redis_data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            retries: 3
+            timeout: 5s
+        networks:
+            - gnify-network
+
+networks:
+    gnify-network:
+        driver: bridge
+
+volumes:
+    postgres_data:
+    redis_data:
