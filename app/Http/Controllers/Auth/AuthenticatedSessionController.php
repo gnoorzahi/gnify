@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -16,7 +17,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        return view('auth.login');
+        $currentTenant = app('current_tenant');
+        return view('auth.login', compact('currentTenant'));
     }
 
     /**
@@ -26,7 +28,23 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        $user = Auth::user();
+        
+        // Update last login information
+        $user->update([
+            'last_login_at' => now(),
+            'last_login_ip' => $request->ip(),
+        ]);
+
         $request->session()->regenerate();
+
+        // Store login success message
+        session()->flash('login_success', 'Welcome back, ' . $user->first_name ?? $user->name . '!');
+
+        // Determine redirect based on user role and tenant
+        if ($user->isSuperAdmin()) {
+            return redirect()->intended(route('super-admin.dashboard'));
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
@@ -36,11 +54,15 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = Auth::user();
+        
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
+
+        // Store logout message
+        session()->flash('logout_success', 'You have been successfully logged out.');
 
         return redirect('/');
     }

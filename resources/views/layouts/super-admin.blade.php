@@ -6,6 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Super Admin - ' . config('app.name'))</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('GnifyLogo.svg') }}">
+    <link rel="shortcut icon" href="{{ asset('GnifyLogo.svg') }}">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -15,8 +19,14 @@
     <div class="min-h-screen flex">
         <!-- Sidebar -->
         <div class="w-64 bg-gray-800 text-white">
-            <div class="p-4">
-                <h2 class="text-xl font-bold">Super Admin</h2>
+            <div class="p-4 border-b border-gray-700">
+                <div class="flex items-center space-x-3 mb-3">
+                    <img src="{{ asset('GnifyLogo.svg') }}" alt="Gnify Logo" class="h-10 w-10 filter brightness-0 invert">
+                    <div>
+                        <h2 class="text-lg font-bold">Gnify</h2>
+                        <p class="text-xs text-gray-400">Super Admin</p>
+                    </div>
+                </div>
                 <p class="text-gray-300 text-sm">{{ auth()->user()->name }}</p>
             </div>
             

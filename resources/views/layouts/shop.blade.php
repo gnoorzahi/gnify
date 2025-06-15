@@ -5,19 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', config('app.name', 'Gnify Shop'))</title>
-    
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('GnifyLogo.svg') }}">
+    <link rel="shortcut icon" href="{{ asset('GnifyLogo.svg') }}">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     @stack('styles')
 </head>
 <body class="bg-gray-100">
     <nav class="bg-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
+            <div class="flex justify-between h-20">
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center">
-                        <a href="{{ route('home') }}" class="text-2xl font-bold text-gray-800">Gnify Shop</a>
+                        <a href="{{ route('home') }}" class="flex items-center space-x-3">
+                            <img src="{{ asset('GnifyLogo.svg') }}" alt="Gnify Logo" class="h-14 w-14">
+                            <div>
+                                @if(isset($currentTenant))
+                                    <div class="text-sm text-gray-600">{{ $currentTenant->name }}</div>
+                                @endif
+                            </div>
+                        </a>
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
                         <a href="{{ route('home') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
@@ -79,7 +90,16 @@
 
     <footer class="bg-gray-800 mt-12">
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-            <p class="text-center text-gray-400">© 2024 Gnify Shop. All rights reserved.</p>
+            <div class="flex flex-col items-center space-y-4">
+                <div class="flex items-center space-x-3">
+                    <img src="{{ asset('GnifyLogo.svg') }}" alt="Gnify Logo" class="h-12 w-12 filter brightness-0 invert">
+                    <span class="text-white text-2xl font-bold">Gnify</span>
+                </div>
+                @if(isset($currentTenant))
+                    <p class="text-gray-300 text-sm">{{ $currentTenant->name }}</p>
+                @endif
+                <p class="text-center text-gray-400 text-sm">© 2024 Gnify Shop. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
