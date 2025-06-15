@@ -110,4 +110,3 @@ class TenantController extends Controller
             ->with('success', 'Tenant deleted successfully.');
     }
 }
-}
