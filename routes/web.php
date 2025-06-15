@@ -7,6 +7,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
+use App\Http\Controllers\SuperAdmin\TenantController;
+use App\Http\Controllers\SuperAdmin\DomainController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -36,3 +39,11 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Super Admin Routes
+Route::prefix('super-admin')->name('super-admin.')->middleware(['auth', 'super-admin'])->group(function () {
+    Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('tenants', TenantController::class);
+    Route::resource('domains', DomainController::class);
+    Route::post('domains/{domain}/verify', [DomainController::class, 'verify'])->name('domains.verify');
+});
